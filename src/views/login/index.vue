@@ -22,7 +22,7 @@
               <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="loginForm.code"></el-input>
             </el-col>
             <el-col :span="6">
-              <img class="captcha" src="http://134.175.59.248/heimamm/public/captcha?type=login" alt="">
+              <img class="captcha" :src="codeURL" @click="getCode" alt="">
             </el-col>
           </el-row>
         </el-form-item>
@@ -52,7 +52,9 @@ export default {
   name:'Login',
   data() {
     return {
-      
+      // 验证码url地址
+      codeURL:process.env.VUE_APP_BASEURL+"/captcha?type=login",
+
       // 表单数据对象,绑定在form标签上
       loginForm:{
         // 输入框v-model的值
@@ -103,6 +105,19 @@ export default {
         ]
       }
     }
+  },
+  methods: {
+    // 点击验证码重新获取验证码的url地址
+    getCode(){
+      // url后面添加随机不重复数字,解决get请求的url缓存问题
+      this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&r"+Math.random();
+      // this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&t"+(new Date()-0);
+      console.log(this.codeURL);
+    }
+  },
+  created() {
+    // 获取开发阶段基准路径固定写法
+    // console.log("开发阶段基准路径：",process.env.VUE_APP_BASEURL);
   },
 }
 </script>
