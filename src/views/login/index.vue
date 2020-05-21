@@ -1,0 +1,158 @@
+<template>
+  <div id="app">
+    <div class="login-container">
+    <div class="left">
+      <div class="title-box">
+        <img src="@/assets/login_icon.png" alt="" />
+        <span class="title">黑马面面</span>
+        <span class="line"></span>
+        <span class="sub-title">用户登录</span>
+      </div>
+      <!-- form表单部分 -->
+      <el-form class="login-form" :model="loginForm" :rules="rules">
+        <el-form-item prop="phone">
+          <el-input placeholder="请输入手机号" prefix-icon="el-icon-user" v-model="loginForm.phone"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input  placeholder="请输入密码" prefix-icon="el-icon-lock" show-password v-model="loginForm.password"></el-input>
+        </el-form-item>
+        <el-form-item prop="code">
+          <el-row :gutter="20">
+            <el-col :span="18">
+              <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="loginForm.code"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <img class="captcha" src="http://134.175.59.248/heimamm/public/captcha?type=login" alt="">
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item prop='ischecked'>
+          <el-checkbox v-model="loginForm.ischecked"></el-checkbox>
+          我已阅读并同意
+          <el-link type="primary">用户协议</el-link>和
+          <el-link type="primary">隐私条款</el-link>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" style="width:100%">登录</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" style="width:100%">注册</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="right">
+      <img src="@/assets/login_bg.png" alt="" />
+    </div>
+  </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name:'Login',
+  data() {
+    return {
+      
+      // 表单数据对象,绑定在form标签上
+      loginForm:{
+        // 输入框v-model的值
+        "phone": "", // 手机号
+        "password": "", // 密码
+        "code":"", // 验证码
+        ischecked:false, // 用户协议是否勾选
+      },
+
+      // 表单验证规则,rules绑定在form标签上
+      rules:{
+        // 定义属性prop="phone"在form-item标签上
+        phone:[
+          // 自定义校验规则
+          { validator:(rule, value, callback)=>{
+            if(!value){
+              return callback(new Error('手机号不能为空'));
+            }
+            // 手机号的正则表达式
+            const reg = /^1[3456789][0-9]{9}$/;
+            if(!reg.test(value)){
+              return callback(new Error('手机号格式不正确'));
+            }
+            callback();
+          },trigger:'blur' }
+        ],
+        // 定义属性prop="password"在form-item标签上
+        password:[
+          // 验证表单是否有内容
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          // 验证表单长度是否为6 到 12 个字符
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        ],
+        // 定义属性prop="code"在form-item标签上
+        code:[
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { min: 4, max: 4, message: '长度必须是4个字符', trigger: 'blur' }
+        ],
+        // 定义属性prop="ischecked"在form-item标签上
+        ischecked:[
+           { validator: (rule, value, callback)=>{
+             console.log(value);
+             if(!value){
+               return callback(new Error('必须勾选用户协议'));
+             }
+             callback();
+           }, trigger: 'change' }
+        ]
+      }
+    }
+  },
+}
+</script>
+
+<style lang="less">
+  .login-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(225deg, #1493fa, #01c6fa);
+  .left {
+    width: 478px;
+    height: 550px;
+    background: #f5f5f5;
+    padding: 48px;
+    .title-box {
+      display: flex;
+      align-items: center;
+      img {
+        width: 22px;
+        height: 17px;
+        margin-right: 16px;
+      }
+      .title {
+        font-size: 24px;
+        margin-right: 14px;
+      }
+      .line {
+        width: 1px;
+        background-color: #c7c7c7;
+        height: 27px;
+        margin-right: 12px;
+      }
+      .sub-title {
+        font-size: 22px;
+      }
+    }
+    .login-form {
+      margin-top: 29px;
+      img {
+        width: 22px;
+        height: 17px;
+        margin-right: 16px;
+      }
+      .captcha {
+        width: 100%;
+        height: 40px;
+      }
+    }
+  }
+}
+</style>
