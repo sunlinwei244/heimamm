@@ -12,6 +12,9 @@ Vue.config.productionTip = false
 // 导入ElementUI
 import './plugins/element'
 
+// 导入request.js文件(里面封装了axios)
+import './utils/request'
+
 // 导入路由
 import router from './router'
 

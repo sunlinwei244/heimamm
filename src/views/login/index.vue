@@ -9,7 +9,7 @@
         <span class="sub-title">用户登录</span>
       </div>
       <!-- form表单部分 -->
-      <el-form class="login-form" :model="loginForm" :rules="rules">
+      <el-form class="login-form" :model="loginForm" :rules="rules" ref="loginFormRef">
         <el-form-item prop="phone">
           <el-input placeholder="请输入手机号" prefix-icon="el-icon-user" v-model="loginForm.phone"></el-input>
         </el-form-item>
@@ -33,7 +33,7 @@
           <el-link type="primary">隐私条款</el-link>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width:100%">登录</el-button>
+          <el-button type="primary" style="width:100%" @click="loginClick">登录</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" style="width:100%">注册</el-button>
@@ -48,6 +48,8 @@
 </template>
 
 <script>
+// 按需导入(令牌)
+import { setToken } from '../../utils/token'
 export default {
   name:'Login',
   data() {
@@ -58,8 +60,8 @@ export default {
       // 表单数据对象,绑定在form标签上
       loginForm:{
         // 输入框v-model的值
-        "phone": "", // 手机号
-        "password": "", // 密码
+        "phone": "18511111111", // 手机号
+        "password": "12345678", // 密码
         "code":"", // 验证码
         ischecked:false, // 用户协议是否勾选
       },
@@ -96,7 +98,7 @@ export default {
         // 定义属性prop="ischecked"在form-item标签上
         ischecked:[
            { validator: (rule, value, callback)=>{
-             console.log(value);
+            //  console.log(value);
              if(!value){
                return callback(new Error('必须勾选用户协议'));
              }
@@ -106,15 +108,64 @@ export default {
       }
     }
   },
+
   methods: {
     // 点击验证码重新获取验证码的url地址
     getCode(){
       // url后面添加随机不重复数字,解决get请求的url缓存问题
       this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&r"+Math.random();
       // this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&t"+(new Date()-0);
-      console.log(this.codeURL);
+      // console.log(this.codeURL);
+    },
+    // 点击登录按钮
+    loginClick(){
+      this.$refs.loginFormRef.validate(async (valid)=>{
+      //   console.log(valid);
+      //   if(!valid) return;
+      //   this.$axios({
+      //     method:'post',
+      //     url:"/login",
+      //     data:this.loginForm
+      //   }).then(res=>{
+      //     console.log(res.data);
+      //     if(res.data.code==200){
+      //       this.$message({
+      //       message: '登录成功',
+      //       type: 'success'
+      //       });
+      //     }else{
+      //        this.$message.error(res.data.message);
+      //        this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&r"+Math.random();
+      //     }
+      //   })
+
+        // 校验表单是否为空
+        if(!valid) return;
+        // 校验表单不为空,发送axios
+        const res = await this.$axios.post('/login',this.loginForm)
+        console.log(res);
+        // 根据axios的code判断是否登录成功
+        if(res.data.code==200){
+            this.$message({
+            message: '登录成功',
+            type: 'success'
+            });
+            // 保存Token令牌
+            setToken(res.data.data.token);
+            // 跳转到layout页面
+            this.$router.push('/layout')
+
+          }else{
+             this.$message.error(res.data.message);
+            //  code不为200,重新获取验证码
+             this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&r"+Math.random();
+          }
+
+      })
+      
     }
   },
+
   created() {
     // 获取开发阶段基准路径固定写法
     // console.log("开发阶段基准路径：",process.env.VUE_APP_BASEURL);
