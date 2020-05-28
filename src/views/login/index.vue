@@ -36,7 +36,7 @@
           <el-button type="primary" style="width:100%" @click="loginClick">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width:100%">注册</el-button>
+          <el-button type="primary" style="width:100%" @click="registerClick">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -44,14 +44,22 @@
       <img src="@/assets/login_bg.png" alt="" />
     </div>
   </div>
+  <!-- 使用注册组件 -->
+  <register ref="registerRef"></register>
   </div>
 </template>
 
 <script>
 // 按需导入(令牌)
 import { setToken } from '../../utils/token'
+// 导入注册组件
+import register from './register'
 export default {
   name:'Login',
+  // 注册组件
+  components:{
+    register
+  },
   data() {
     return {
       // 验证码url地址
@@ -117,6 +125,7 @@ export default {
       // this.codeURL=process.env.VUE_APP_BASEURL+"/captcha?type=login&t"+(new Date()-0);
       // console.log(this.codeURL);
     },
+    
     // 点击登录按钮
     loginClick(){
       this.$refs.loginFormRef.validate(async (valid)=>{
@@ -163,6 +172,11 @@ export default {
 
       })
       
+    },
+
+    // 点击注册按钮
+    registerClick(){
+      this.$refs.registerRef.dialogVisible=true
     }
   },
 
